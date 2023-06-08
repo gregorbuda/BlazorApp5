@@ -1,0 +1,34 @@
+﻿@page "/Videos"
+@using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos
+@inject HttpClient httpClient
+
+<h1>Videos</h1>
+@if (VideosResponse == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var videoInfo in this.VideosResponse.results)
+        {
+            <div class="card" style="width:100px; height:100px;">
+                <div class="card-title">
+                    @videoInfo.name
+                </div>
+                <div class="card-body">
+                    @videoInfo.description
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private ListVideosResponse VideosResponse { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.VideosResponse = await httpClient.GetFromJsonAsync<ListVideosResponse>("VideoIndexer/ListVideos");
+    }
+}
