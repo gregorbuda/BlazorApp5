@@ -1,0 +1,85 @@
+﻿@page "/Search"
+@inject HttpClient httpClient
+@using SV=BlazorApp5.Shared.Models.AzureVideoIndexer.SearchVideos
+
+<div class="container">
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="type text to search" @bind="@Keyword" />
+        <button type="button" class="btn btn-primary" @onclick="SearchVideos">Search</button>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    @if (this.FoundVideos != null)
+    {
+        <div class="row">
+            @foreach (var singleVideo in this.FoundVideos.results)
+            {
+                <a href="@this.VideosPageUrls[singleVideo.id]">
+                    <div class="card" style="width:22rem; height:22rem;">
+                        <div class="card-title">
+                            @singleVideo.name
+                        </div>
+                        <img class="card-img-top" src="@this.VideosThumbnails[singleVideo.id]" alt="Card image cap">
+                        <div class="card-body">
+                            <p class="card-text" style="height:10em;">
+                                @singleVideo.description
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            }
+
+        </div>
+    }
+    <div class="row">
+        @Message
+    </div>
+}
+
+
+@code {
+    private string Keyword { get; set; }
+    private string Message { get; set; }
+    private SV.SearchVideosResponse FoundVideos { get; set; }
+    public bool IsLoading { get; set; }
+    private Dictionary<string, string> VideosThumbnails { get; set; } = new Dictionary<string, string>();
+    private Dictionary<string, string> VideosPageUrls { get; set; } = new Dictionary<string, string>();
+
+    private async Task SearchVideos()
+    {
+        this.IsLoading = true;
+        string location = await httpClient.GetStringAsync("VideoIndexer/GetLocation");
+        this.VideosThumbnails = new Dictionary<string, string>();
+        this.VideosPageUrls = new Dictionary<string, string>();
+        this.FoundVideos = await httpClient.GetFromJsonAsync<SV.SearchVideosResponse>($"VideoIndexer" +
+        $"/SearchVideos?keyword={Keyword}");
+
+        foreach (var singleVideo in this.FoundVideos.results)
+        {
+            var thumbbailBase64 = await httpClient.GetStringAsync($"VideoIndexer/GetVideoThumbnail" +
+            $"?videoId={singleVideo.id}&thumbnailId={singleVideo.thumbnailId}");
+            var imgSrc = String.Format("data:image/gif;base64,{0}", thumbbailBase64);
+            this.VideosThumbnails.Add(singleVideo.id, imgSrc);
+            var videoAccessToken = await httpClient.GetStringAsync($"VideoIndexer/" +
+            $"GetVideoAccessToken?videoId={singleVideo.id}&allowEdit=true");
+            string link = $"/Video/{singleVideo.accountId}/{singleVideo.id}/{location}/{videoAccessToken}";
+            this.VideosPageUrls.Add(singleVideo.id, link);
+        }
+        this.IsLoading = false;
+
+        if(this.FoundVideos.results.Count == 0)
+        {
+            this.Message = "No data Found"; 
+        }
+    }
+}

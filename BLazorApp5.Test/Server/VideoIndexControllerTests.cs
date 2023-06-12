@@ -77,5 +77,34 @@ namespace BLazorApp5.Test.Server
                  Assert.IsTrue(result is OkObjectResult, "Invalid Result");
 
         }
+
+        [TestMethod]
+        public void GetLocationAsync()
+        {
+            VideoIndexerController controller =
+                new VideoIndexerController(this.AzureConfiguration);
+            var result =  controller.GetLocation();
+            Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+
+        }
+
+        [TestMethod]
+        public async Task SearcVideosAsync()
+        {
+            VideoIndexerController controller =
+          new VideoIndexerController(this.AzureConfiguration);
+            var result = await controller.SearchVideos(keyword: "xavi");
+            Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+        }
+
+        [TestMethod]
+        public async Task UploadVideo()
+        {
+            VideoIndexerController controller =
+            new VideoIndexerController(this.AzureConfiguration);
+            var result = await controller.UploadVideo();
+            Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BlazorApp5.Shared;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
+using BlazorApp5.Shared.Models.AzureVideoIndexer.SearchVideos;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net.Http;
@@ -89,6 +90,44 @@ namespace BlazorApp5.Server.Controllers
                 $"&accessToken={videoAccessToken}";
             HttpClient client = new HttpClient();
             var result = await client.GetStringAsync(requestUrl);
+            return Ok(result);
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetLocation()
+        {
+            return Ok(this.AzureConfiguration.VideoIndexerConfiguration.Location);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> SearchVideos(string keyword)
+        {
+            var accountAccesstoken = await this.GetAccountAccessTokenString(false);
+            string requestUrl = $"https://api.videoindexer.ai/" +
+                $"{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+                $"/Videos/Search?" +
+                $"query={keyword}" + 
+            //$"[?sourceLanguage]" +
+            //$"[&hasSourceVideoFile]" +
+            //$"[&sourceVideoId]" +
+            //$"[&privacy]" +
+            //$"[&id]" +
+            //$"[&partition]" +
+            //$"[&externalId]" +
+            //$"[&owner]" +
+            //$"[&face]" +
+            //$"[&animatedcharacter]" +
+            //$"[&textScope]" +
+            //$"[&language]" +
+            //$"[&createdAfter]" +
+            //$"[&createdBefore]" +
+            //$"[&pageSize]" +
+            //$"[&skip]" +
+            $"&accessToken={accountAccesstoken}";
+
+            HttpClient client = new HttpClient();
+            var result = await client.GetFromJsonAsync<SearchVideosResponse>(requestUrl);
             return Ok(result);
         }
     }
