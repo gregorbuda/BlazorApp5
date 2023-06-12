@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp5.Server", "BlazorApp5\Server\BlazorApp5.Server.csproj", "{5CF81FA2-B0E5-4F58-B372-40CDCA6A79FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp5.Server", "BlazorApp5\Server\BlazorApp5.Server.csproj", "{5CF81FA2-B0E5-4F58-B372-40CDCA6A79FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp5.Client", "BlazorApp5\Client\BlazorApp5.Client.csproj", "{75D15A9C-8400-4AF3-BF06-0F90115FE2E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp5.Client", "BlazorApp5\Client\BlazorApp5.Client.csproj", "{75D15A9C-8400-4AF3-BF06-0F90115FE2E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp5.Shared", "BlazorApp5\Shared\BlazorApp5.Shared.csproj", "{8F52AFCF-F9F6-4A04-BC22-E7D6B0AEB3AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp5.Shared", "BlazorApp5\Shared\BlazorApp5.Shared.csproj", "{8F52AFCF-F9F6-4A04-BC22-E7D6B0AEB3AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLazorApp5.Test", "BLazorApp5.Test\BLazorApp5.Test.csproj", "{B71B237F-A319-4DB4-B189-793DB2BF7A7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLazorApp5.Test", "BLazorApp5.Test\BLazorApp5.Test.csproj", "{B71B237F-A319-4DB4-B189-793DB2BF7A7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

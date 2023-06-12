@@ -1,8 +1,10 @@
 ﻿using BlazorApp5.Shared;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BlazorApp5.Server.Controllers
@@ -51,7 +53,43 @@ namespace BlazorApp5.Server.Controllers
             return result.Replace("\"", "");
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetVideoAccessToken(string videoId, bool allowEdit=false)
+        {
+            var videoAccessToken = await this.GetVideoAccessTokenString(videoId, allowEdit);
 
+            return Ok(videoAccessToken);
+        }
 
+        private async Task<string> GetVideoAccessTokenString(string videoId, bool allowEdit = false)
+        {
+            string requestUrl = $"{this.AzureConfiguration.VideoIndexerConfiguration.BaseAPIUrl}" +
+            $"/Auth/{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+            $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+            $"/Videos/{videoId}/AccessToken" +
+            $"?allowEdit={allowEdit}";
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key",
+               this.AzureConfiguration.VideoIndexerConfiguration.SubscriptionKey);
+            var result = await client.GetStringAsync(requestUrl);
+            return result.Replace("\"", string.Empty);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetVideoThumbnail(string videoId, string thumbnailId)
+        {
+            string videoAccessToken = await this.GetVideoAccessTokenString(videoId, true);
+            string format = "Base64";
+            string requestUrl = $"{this.AzureConfiguration.VideoIndexerConfiguration.BaseAPIUrl}" +
+                $"/{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Thumbnails/{thumbnailId}" +
+                $"?format={format}" +
+                $"&accessToken={videoAccessToken}";
+            HttpClient client = new HttpClient();
+            var result = await client.GetStringAsync(requestUrl);
+            return Ok(result);
+        }
     }
 }

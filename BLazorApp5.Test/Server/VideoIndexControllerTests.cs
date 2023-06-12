@@ -1,5 +1,7 @@
 ﻿using BlazorApp5.Server.Controllers;
 using BlazorApp5.Shared;
+using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using LV = BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
 
 namespace BLazorApp5.Test.Server
 {
@@ -45,6 +49,33 @@ namespace BLazorApp5.Test.Server
                 new VideoIndexerController(this.AzureConfiguration);
             var result = await controller.GetAccountAccessToken(false);
             Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+        }
+
+        [TestMethod]
+        public async Task GetVideoAccessTokenAsync()
+        {
+            VideoIndexerController controller =
+                new VideoIndexerController(this.AzureConfiguration);
+            OkObjectResult videoListResult = (OkObjectResult)await controller.ListVideos();
+            var videList =
+                (LV.ListVideosResponse)videoListResult.Value;
+            var firstVideo = videList.results.First();
+            var result = await controller.GetVideoAccessToken(firstVideo.id, false);
+            Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+        }
+
+        [TestMethod]
+        public async Task GetVideoThumbnailAsync()
+        {
+            VideoIndexerController controller =
+                new VideoIndexerController(this.AzureConfiguration);
+            OkObjectResult videoListResult = (OkObjectResult)await controller.ListVideos();
+            var videList = 
+                (LV.ListVideosResponse)videoListResult.Value;
+            var firstVideo = videList.results.First();
+            var result = await controller.GetVideoThumbnail(videoId: firstVideo.id, thumbnailId: firstVideo.thumbnailId);
+                 Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+
         }
     }
 }
