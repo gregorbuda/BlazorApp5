@@ -9,8 +9,10 @@ namespace BlazorApp5.Shared.Models.AzureVideoIndexer.UploadVideo
     public class UploadVideoModel
     {
         public string Name { get; set; }
-        public string CallbackUrl { get; set; }
+       // public string CallbackUrl { get; set; }
 
         public string VideoUrl { get; set; }
+
+        public bool SendSucccesEmail { get; set; }
     }
 }

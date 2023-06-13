@@ -1,6 +1,7 @@
 ﻿using BlazorApp5.Shared;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.SearchVideos;
+using BlazorApp5.Shared.Models.AzureVideoIndexer.UploadVideo;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net.Http;
@@ -22,7 +23,7 @@ namespace BlazorApp5.Server.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> ListVideos()
         {
-            var accountAccessToken = 
+            var accountAccessToken =
                 await this.GetAccountAccessTokenString(false);
             string requestUrl = $"{this.AzureConfiguration.VideoIndexerConfiguration.BaseAPIUrl}" +
                 $"/{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
@@ -55,7 +56,7 @@ namespace BlazorApp5.Server.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetVideoAccessToken(string videoId, bool allowEdit=false)
+        public async Task<IActionResult> GetVideoAccessToken(string videoId, bool allowEdit = false)
         {
             var videoAccessToken = await this.GetVideoAccessTokenString(videoId, allowEdit);
 
@@ -107,7 +108,7 @@ namespace BlazorApp5.Server.Controllers
                 $"{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
                 $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
                 $"/Videos/Search?" +
-                $"query={keyword}" + 
+                $"query={keyword}" +
             //$"[?sourceLanguage]" +
             //$"[&hasSourceVideoFile]" +
             //$"[&sourceVideoId]" +
@@ -129,6 +130,57 @@ namespace BlazorApp5.Server.Controllers
             HttpClient client = new HttpClient();
             var result = await client.GetFromJsonAsync<SearchVideosResponse>(requestUrl);
             return Ok(result);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> UploadVideo(UploadVideoModel model)
+        {
+            var accountAccesstoken = await this.GetAccountAccessTokenString(true);
+
+            string requestUrl = $"https://api.videoindexer.ai/" +
+                $"{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+                $"/Videos" +
+                $"?name={model.Name}" +
+                //$"[&privacy]" +
+                //$"[&priority]" +
+                //$"[&description]" +
+                //$"[&partition]" +
+                //$"[&externalId]" +
+                //$"[&externalUrl]" +
+                //$"&callbackUrl={model.CallbackUrl}" +
+                //$"[&metadata]" +
+                //$"[&language]" +
+                $"&videoUrl={model.VideoUrl}" +
+                //$"[&fileName]" +
+                //$"[&excludedAI]" +
+                //$"[&indexingPreset]" +
+                //$"[&streamingPreset]" +
+                //$"[&linguisticModelId]" +
+                //$"[&personModelId]" +
+                $"&sendSuccessEmail={model.SendSucccesEmail}" +
+                //$"[&assetId]" +
+                //$"[&brandsCategories]" +
+                //$"[&customLanguages]" +
+                //$"[&logoGroupId]" +
+                //$"[&useManagedIdentityToDownloadVideo]" +
+                $"&accessToken={accountAccesstoken}";
+
+            HttpClient client = new HttpClient();
+            var result = await client.PostAsync(requestUrl, null);
+            if (result.IsSuccessStatusCode)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                string content = string.Empty;
+                if(result.Content.Headers.ContentLength > 0)
+                {
+                    content = await result.Content.ReadAsStringAsync();
+                }
+                return Problem(detail: result.ReasonPhrase, title: result.ReasonPhrase);
+            }
         }
     }
 }

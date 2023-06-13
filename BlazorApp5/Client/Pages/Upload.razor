@@ -1,0 +1,66 @@
+﻿@page "/Upload"
+@using BlazorApp5.Shared.Models.AzureVideoIndexer.UploadVideo
+@inject HttpClient httpClient
+
+<div class="container">
+    <div class="input-group">
+        <span class="input-group-text">
+            Name
+        </span>
+        <input type="text" placeholder="Type Video Name" @bind="Name" />
+    </div>
+    <div class="input-group">
+        <span class="input-group-text">
+            Video Url
+        </span>
+        <input type="text" placeholder="Type Source Video" @bind="VideoUrl" />
+    </div>
+    <div class="input-group">
+        <span class="input-group-text">
+            Send succes email
+        </span>
+        <input type="checkbox" @bind="SendSuccessEmail" />
+    </div>
+    <div class="input-group">
+        @if (IsUploading ==false)
+        {
+            <button type="button" class="btn btn-primary" @onclick="UploadVideo">UpLoad</button>
+        }  
+        else
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row">
+    @Message
+</div>
+
+@code {
+    private string Name { get; set; }
+    private string VideoUrl { get; set; }
+    private bool SendSuccessEmail { get; set; } = true;
+    private bool IsUploading { get; set; } = false;
+    private string Message { get; set; }
+
+    private async Task UploadVideo()
+    {
+        IsUploading = true;
+        await Task.Delay(6000);
+
+        UploadVideoModel model =
+        new UploadVideoModel()
+        {
+            Name = this.Name,
+            VideoUrl = this.VideoUrl,
+            SendSucccesEmail = this.SendSuccessEmail
+        };
+        var result = await httpClient.PostAsJsonAsync<UploadVideoModel>("/VideoIndexer/UploadVideo", model);
+        this.Message = result.ReasonPhrase;
+        IsUploading = false;
+    }
+}
