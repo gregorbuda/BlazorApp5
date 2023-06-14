@@ -1,12 +1,18 @@
 ﻿using BlazorApp5.Shared;
+using BlazorApp5.Shared.Models.AzureVideoIndexer.ListLanguajes;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.SearchVideos;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.UploadVideo;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlazorApp5.Server.Controllers
@@ -101,6 +107,25 @@ namespace BlazorApp5.Server.Controllers
         }
 
         [HttpGet("[action]")]
+        public async Task<IActionResult> GetLanguajes()
+        {
+
+            string requestUrl = $"https://api.videoindexer.ai/" +
+                $"{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/SupportedLanguages";
+
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            var clientHandler = new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
+            HttpClient client = new HttpClient(clientHandler);
+            var result = await client.GetAsync(requestUrl);
+            string json = await result.Content.ReadAsStringAsync();
+            var result2 = JsonConvert.DeserializeObject<List<Result2>>(json);
+
+            return Ok(result2);
+        }
+
+
+        [HttpGet("[action]")]
         public async Task<IActionResult> SearchVideos(string keyword)
         {
             var accountAccesstoken = await this.GetAccountAccessTokenString(false);
@@ -120,7 +145,7 @@ namespace BlazorApp5.Server.Controllers
             //$"[&face]" +
             //$"[&animatedcharacter]" +
             //$"[&textScope]" +
-            //$"[&language]" +
+              // $"&language={language}" +
             //$"[&createdAfter]" +
             //$"[&createdBefore]" +
             //$"[&pageSize]" +
@@ -150,7 +175,7 @@ namespace BlazorApp5.Server.Controllers
                 //$"[&externalUrl]" +
                 //$"&callbackUrl={model.CallbackUrl}" +
                 //$"[&metadata]" +
-                //$"[&language]" +
+                $"&language={model.Languaje}" +
                 $"&videoUrl={model.VideoUrl}" +
                 //$"[&fileName]" +
                 //$"[&excludedAI]" +

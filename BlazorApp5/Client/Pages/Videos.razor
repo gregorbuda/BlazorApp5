@@ -21,7 +21,7 @@ else
                     <div class="card-title">
                         @videoInfo.name
                     </div>
-                    <img class="card-img-top" src="@this.VideosThumbnails[videoInfo.id]" alt="Card image cap">
+                    @*<img class="card-img-top" src="@this.VideosThumbnails[videoInfo.id]" alt="Card image cap">*@
                     <div class="card-body">
                         <p class="card-text" style="height:10em;">
                             @videoInfo.description
@@ -49,10 +49,10 @@ else
 
         foreach (var singleVideo in this.VideosResponse.results)
         {
-            var thumbbailBase64 = await httpClient.GetStringAsync($"VideoIndexer/GetVideoThumbnail" +
-                $"?videoId={singleVideo.id}&thumbnailId={singleVideo.thumbnailId}");
-            var imgSrc = String.Format("data:image/gif;base64,{0}", thumbbailBase64);
-            this.VideosThumbnails.Add(singleVideo.id, imgSrc);
+            //var thumbbailBase64 = await httpClient.GetStringAsync($"VideoIndexer/GetVideoThumbnail" +
+            //    $"?videoId={singleVideo.id}&thumbnailId={singleVideo.thumbnailId}");
+            //var imgSrc = String.Format("data:image/gif;base64,{0}", thumbbailBase64);
+            //this.VideosThumbnails.Add(singleVideo.id, imgSrc);
             var videoAccessToken = await httpClient.GetStringAsync($"VideoIndexer/" +
             $"GetVideoAccessToken?videoId={singleVideo.id}&allowEdit=true");            
             string link = $"/Video/{singleVideo.accountId}/{singleVideo.id}/{location}/{videoAccessToken}";

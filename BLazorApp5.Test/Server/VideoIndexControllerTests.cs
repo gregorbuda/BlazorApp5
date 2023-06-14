@@ -93,18 +93,27 @@ namespace BLazorApp5.Test.Server
         {
             VideoIndexerController controller =
           new VideoIndexerController(this.AzureConfiguration);
-            var result = await controller.SearchVideos(keyword: "xavi");
+            var result = await controller.SearchVideos(keyword: "xavi", language: "test");
             Assert.IsTrue(result is OkObjectResult, "Invalid Result");
         }
 
         [TestMethod]
-        public async Task UploadVideo()
+        public async Task GetLanguajesAsync()
         {
             VideoIndexerController controller =
-            new VideoIndexerController(this.AzureConfiguration);
-            var result = await controller.UploadVideo();
+          new VideoIndexerController(this.AzureConfiguration);
+            var result = await controller.GetLanguajes();
             Assert.IsTrue(result is OkObjectResult, "Invalid Result");
         }
+
+        //[TestMethod]
+        //public async Task UploadVideo()
+        //{
+        //    VideoIndexerController controller =
+        //    new VideoIndexerController(this.AzureConfiguration);
+        //    var result = await controller.UploadVideo(language: "test");
+        //    Assert.IsTrue(result is OkObjectResult, "Invalid Result");
+        //}
 
     }
 }

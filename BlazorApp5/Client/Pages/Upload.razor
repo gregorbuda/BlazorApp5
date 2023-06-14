@@ -1,5 +1,6 @@
 ﻿@page "/Upload"
 @using BlazorApp5.Shared.Models.AzureVideoIndexer.UploadVideo
+@using BlazorApp5.Shared.Models.AzureVideoIndexer.ListLanguajes
 @inject HttpClient httpClient
 
 <div class="container">
@@ -21,11 +22,14 @@
         </span>
         <input type="checkbox" @bind="SendSuccessEmail" />
     </div>
+    <div class="row">
+        @ListLanguajes
+    </div>
     <div class="input-group">
-        @if (IsUploading ==false)
+        @if (IsUploading == false)
         {
             <button type="button" class="btn btn-primary" @onclick="UploadVideo">UpLoad</button>
-        }  
+        }
         else
         {
             <div class="d-flex justify-content-center">
@@ -41,11 +45,22 @@
 </div>
 
 @code {
+    private List<Result2> ListLanguajes { get; set; }
     private string Name { get; set; }
     private string VideoUrl { get; set; }
     private bool SendSuccessEmail { get; set; } = true;
     private bool IsUploading { get; set; } = false;
     private string Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string Test = "";
+        this.ListLanguajes = await httpClient.GetFromJsonAsync<List<Result2>>("VideoIndexer/GetLanguajes");
+        @foreach (var Languajes in this.ListLanguajes)
+        {
+            Test = Languajes.name;
+        }
+    }
 
     private async Task UploadVideo()
     {
@@ -54,11 +69,11 @@
 
         UploadVideoModel model =
         new UploadVideoModel()
-        {
-            Name = this.Name,
-            VideoUrl = this.VideoUrl,
-            SendSucccesEmail = this.SendSuccessEmail
-        };
+            {
+                Name = this.Name,
+                VideoUrl = this.VideoUrl,
+                SendSucccesEmail = this.SendSuccessEmail
+            };
         var result = await httpClient.PostAsJsonAsync<UploadVideoModel>("/VideoIndexer/UploadVideo", model);
         this.Message = result.ReasonPhrase;
         IsUploading = false;
