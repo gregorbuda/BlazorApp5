@@ -22,8 +22,17 @@
         </span>
         <input type="checkbox" @bind="SendSuccessEmail" />
     </div>
-    <div class="row">
-        @ListLanguajes
+    <div class="input-group">
+        <label for="cars">Choose a Languaje:</label>
+        @if (this.ListLanguajes != null)
+        {
+            <select name="cars" id="cars" @bind="Languaje">
+                @foreach (var Languajes in this.ListLanguajes)
+                {
+                    <option value="@Languajes.languageCode">@Languajes.name</option>
+                }
+            </select>
+        }
     </div>
     <div class="input-group">
         @if (IsUploading == false)
@@ -48,12 +57,18 @@
     private List<Result2> ListLanguajes { get; set; }
     private string Name { get; set; }
     private string VideoUrl { get; set; }
+    private string Languaje { get; set; }
     private bool SendSuccessEmail { get; set; } = true;
     private bool IsUploading { get; set; } = false;
     private string Message { get; set; }
+    private string MensajeLenguaje { get; set; }
+    private string MensajeHola { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        MensajeLenguaje = "Hola";
+        MensajeHola = "Chao";
+
         string Test = "";
         this.ListLanguajes = await httpClient.GetFromJsonAsync<List<Result2>>("VideoIndexer/GetLanguajes");
         @foreach (var Languajes in this.ListLanguajes)
@@ -71,6 +86,7 @@
         new UploadVideoModel()
             {
                 Name = this.Name,
+                Languaje = this.Languaje,
                 VideoUrl = this.VideoUrl,
                 SendSucccesEmail = this.SendSuccessEmail
             };
