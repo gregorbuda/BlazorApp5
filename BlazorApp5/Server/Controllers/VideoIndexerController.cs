@@ -157,7 +157,24 @@ namespace BlazorApp5.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPost("[action]")]
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetTranscription()
+        {
+            var accountAccesstoken = await this.GetAccountAccessTokenString(true);
+
+            string requestUrl = $"https://api.videoindexer.ai/" +
+                $"{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+                $"/Videos/07adba9229" +
+                $"/Captions" +
+                $"?accessToken={accountAccesstoken}";
+
+            HttpClient client = new HttpClient();
+            var result = await client.GetStringAsync(requestUrl);
+            return Ok(result);
+        }
+
+            [HttpPost("[action]")]
         public async Task<IActionResult> UploadVideo(UploadVideoModel model)
         {
             var accountAccesstoken = await this.GetAccountAccessTokenString(true);
