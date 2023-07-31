@@ -145,7 +145,7 @@ namespace BlazorApp5.Server.Controllers
             //$"[&face]" +
             //$"[&animatedcharacter]" +
             //$"[&textScope]" +
-              // $"&language={language}" +
+            // $"&language={language}" +
             //$"[&createdAfter]" +
             //$"[&createdBefore]" +
             //$"[&pageSize]" +
@@ -174,7 +174,7 @@ namespace BlazorApp5.Server.Controllers
             return Ok(result);
         }
 
-            [HttpPost("[action]")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> UploadVideo(UploadVideoModel model)
         {
             var accountAccesstoken = await this.GetAccountAccessTokenString(true);
@@ -217,7 +217,7 @@ namespace BlazorApp5.Server.Controllers
             else
             {
                 string content = string.Empty;
-                if(result.Content.Headers.ContentLength > 0)
+                if (result.Content.Headers.ContentLength > 0)
                 {
                     content = await result.Content.ReadAsStringAsync();
                 }
