@@ -13,30 +13,23 @@
 }
 else
 {
-    <div class="row">
-        @foreach (var videoInfo in this.VideosResponse.results)
-        {
-            <a href="@this.VideosPageUrls[videoInfo.id]">
-                <div class="card" style="width:22rem; height:22rem;">
-                    <div class="card-title">
-                        @videoInfo.name
-                    </div>
-                    @*<img class="card-img-top" src="@this.VideosThumbnails[videoInfo.id]" alt="Card image cap">*@
-                    <div class="card-body">
-                        <p class="card-text" style="height:10em;">
-                            @videoInfo.description
-                        </p>
-                    </div>
-                </div>
-            </a>
-        }
-    </div>
+    @foreach (var videoInfo in this.VideosResponse.results)
+    {
+        <ul>
+            <li type="circle">
+                @videoInfo.name
+                <a href="@this.VideosTranscriptionUrls[videoInfo.id]">Transcripción</a> -
+                <a href="@this.VideosEmotionsSentiments[videoInfo.id]">Sentimientos y emociones</a>
+            </li>
+        </ul>
+    }
+
 }
 
 @code {
     private ListVideosResponse VideosResponse { get; set; }
-    private Dictionary<string, string> VideosThumbnails { get; set; }
-    private Dictionary<string, string> VideosPageUrls { get; set; }
+    private Dictionary<string, string> VideosEmotionsSentiments { get; set; }
+    private Dictionary<string, string> VideosTranscriptionUrls { get; set; }
     bool IsLoading { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
@@ -44,8 +37,8 @@ else
         this.IsLoading = true;
         string location = await httpClient.GetStringAsync("VideoIndexer/GetLocation");
         this.VideosResponse = await httpClient.GetFromJsonAsync<ListVideosResponse>("VideoIndexer/ListVideos");
-        this.VideosThumbnails = new Dictionary<string, string>();
-        this.VideosPageUrls = new Dictionary<string, string>();
+        this.VideosEmotionsSentiments = new Dictionary<string, string>();
+        this.VideosTranscriptionUrls = new Dictionary<string, string>();
 
         foreach (var singleVideo in this.VideosResponse.results)
         {
@@ -54,9 +47,11 @@ else
             //var imgSrc = String.Format("data:image/gif;base64,{0}", thumbbailBase64);
             //this.VideosThumbnails.Add(singleVideo.id, imgSrc);
             var videoAccessToken = await httpClient.GetStringAsync($"VideoIndexer/" +
-            $"GetVideoAccessToken?videoId={singleVideo.id}&allowEdit=true");            
-            string link = $"/Video/{singleVideo.accountId}/{singleVideo.id}/{location}/{videoAccessToken}";
-            this.VideosPageUrls.Add(singleVideo.id, link);
+            $"GetVideoAccessToken?videoId={singleVideo.id}&allowEdit=true");
+            string linkTranscription = $"/Video/{singleVideo.accountId}/{singleVideo.id}/{location}/{videoAccessToken}";
+            this.VideosTranscriptionUrls.Add(singleVideo.id, linkTranscription);
+            string linkEmotionsSentiments = $"/EmotionsSentiments/{singleVideo.id}";
+            this.VideosEmotionsSentiments.Add(singleVideo.id, linkEmotionsSentiments);
 
         };
         this.IsLoading = false;

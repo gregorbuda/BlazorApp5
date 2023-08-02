@@ -1,0 +1,33 @@
+﻿@page "/Reporte"
+@inject IJSRuntime js
+
+<div class="card-body">
+    <p class="card-text">A single page with text</p>
+    <a href="#" class="btn btn-primary" @onclick="@(p => ClickCreateFile(1, "text.pdf"))">Download</a>
+    <button type="button" class="btn btn-success" @onclick="@(p => ClickOpenToIframe(1, "pdfFrame"))">View</button>
+    <button type="button" class="btn btn-warning" @onclick="@(p => ClickOpenNewTab(1, "text.pdf"))">NewTab</button>
+</div>
+
+
+<div class="card h-100">
+    <div id="pdfFrame"></div>
+</div>
+@code {
+    private void ClickCreateFile(int pagetype, string filename)
+    {
+        var pdf = new BlazorApp5.Client.Pdf.report();
+        pdf.Generate(js, pagetype, filename);
+    }
+
+    private void ClickOpenToIframe(int pagetype, string idiFrame)
+    {
+        var pdf = new BlazorApp5.Client.Pdf.report();
+        pdf.OpenToIframe(js, pagetype, idiFrame);
+    }
+
+    private void ClickOpenNewTab(int pagetype, string filename)
+    {
+        var pdf = new BlazorApp5.Client.Pdf.report();
+        pdf.OpenNewTab(js, pagetype, filename);
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using BlazorApp5.Shared;
+using BlazorApp5.Shared.Models.AzureVideoIndexer.ListEmotionsSentiments;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListLanguajes;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.ListVideos;
 using BlazorApp5.Shared.Models.AzureVideoIndexer.SearchVideos;
@@ -101,6 +102,22 @@ namespace BlazorApp5.Server.Controllers
         }
 
         [HttpGet("[action]")]
+        public async Task<IActionResult> GetEmotionsSentiments(string videoId)
+        {
+            string videoAccessToken = await this.GetVideoAccessTokenString(videoId, true);
+            string requestUrl = $"{this.AzureConfiguration.VideoIndexerConfiguration.BaseAPIUrl}" +
+                $"/{this.AzureConfiguration.VideoIndexerConfiguration.Location}" +
+                $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
+                $"/Videos/{videoId}" +
+                $"/Index" +
+                $"?accessToken={videoAccessToken}";
+            HttpClient client = new HttpClient();
+            var result = await client.GetFromJsonAsync<ListEmotionsSemtiments>(requestUrl);
+            return Ok(result);
+        }
+
+
+        [HttpGet("[action]")]
         public IActionResult GetLocation()
         {
             return Ok(this.AzureConfiguration.VideoIndexerConfiguration.Location);
@@ -134,22 +151,6 @@ namespace BlazorApp5.Server.Controllers
                 $"/Accounts/{this.AzureConfiguration.VideoIndexerConfiguration.AccountId}" +
                 $"/Videos/Search?" +
                 $"query={keyword}" +
-            //$"[?sourceLanguage]" +
-            //$"[&hasSourceVideoFile]" +
-            //$"[&sourceVideoId]" +
-            //$"[&privacy]" +
-            //$"[&id]" +
-            //$"[&partition]" +
-            //$"[&externalId]" +
-            //$"[&owner]" +
-            //$"[&face]" +
-            //$"[&animatedcharacter]" +
-            //$"[&textScope]" +
-            // $"&language={language}" +
-            //$"[&createdAfter]" +
-            //$"[&createdBefore]" +
-            //$"[&pageSize]" +
-            //$"[&skip]" +
             $"&accessToken={accountAccesstoken}";
 
             HttpClient client = new HttpClient();

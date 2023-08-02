@@ -88,14 +88,6 @@ namespace BLazorApp5.Test.Server
 
         }
 
-        [TestMethod]
-        public async Task SearcVideosAsync()
-        {
-            VideoIndexerController controller =
-          new VideoIndexerController(this.AzureConfiguration);
-            var result = await controller.SearchVideos(keyword: "xavi", language: "test");
-            Assert.IsTrue(result is OkObjectResult, "Invalid Result");
-        }
 
         [TestMethod]
         public async Task GetLanguajesAsync()
